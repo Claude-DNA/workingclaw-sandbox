@@ -5,7 +5,6 @@ mod task_runner;
 mod config;
 
 use serde::{Deserialize, Serialize};
-use tauri::Manager;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 

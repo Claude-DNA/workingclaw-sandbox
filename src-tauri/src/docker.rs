@@ -30,7 +30,7 @@ pub enum ContainerStatus {
 }
 
 /// Check if Docker daemon is running
-pub async fn check_docker() -> Result<bool, Box<dyn std::error::Error>> {
+pub async fn check_docker() -> Result<bool, Box<dyn std::error::Error + Send + Sync>> {
     let docker = Docker::connect_with_local_defaults()?;
     docker.ping().await?;
     Ok(true)
@@ -55,7 +55,7 @@ pub async fn run_task_in_container(
     memory_mb: u64,
     cpu_limit: f64,
     timeout_secs: u64,
-) -> Result<String, Box<dyn std::error::Error>> {
+) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
     let docker = Docker::connect_with_local_defaults()?;
 
     let container_name = format!("workingclaw-task-{}", task_id);
@@ -82,7 +82,7 @@ pub async fn run_task_in_container(
         // Allow access to host's Ollama only — no internet
         extra_hosts: Some(vec!["host.docker.internal:host-gateway".to_string()]),
         // Read-only root filesystem for security
-        read_only_rootfs: Some(true),
+        readonly_rootfs: Some(true),
         // No privileged access
         privileged: Some(false),
         ..Default::default()
@@ -138,7 +138,8 @@ pub async fn run_task_in_container(
     };
     let mut logs = docker.logs(&container.id, Some(log_opts));
     while let Some(Ok(chunk)) = logs.next().await {
-        output.push_str(&chunk.to_string());
+        let s: String = chunk.to_string();
+        output.push_str(&s);
     }
 
     // Clean up container
