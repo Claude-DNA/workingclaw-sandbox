@@ -1,0 +1,27 @@
+[package]
+name = "workingclaw-sandbox"
+version = "0.1.0"
+description = "WorkingClaw Market Operator Sandbox"
+authors = ["OHANA"]
+edition = "2021"
+
+[lib]
+name = "workingclaw_sandbox_lib"
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon"] }
+tauri-plugin-shell = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12", features = ["json"] }
+tokio = { version = "1", features = ["full"] }
+bollard = "0.17"            # Docker API client
+uuid = { version = "1", features = ["v4"] }
+chrono = { version = "0.4", features = ["serde"] }
+dirs = "5"
+log = "0.4"
+env_logger = "0.11"
